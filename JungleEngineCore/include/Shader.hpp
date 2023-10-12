@@ -15,9 +15,11 @@ namespace JEE {
 
     class Shader {
     public:
+        Shader(unsigned int id);
+
         unsigned int ID;
 
-        void CreateShader(const char *vertexPath, const char *fragmentPath);
+        Shader(const char *vertexPath, const char *fragmentPath);
 
         void use() const;
 

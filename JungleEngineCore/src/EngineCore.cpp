@@ -45,9 +45,10 @@ namespace JEE {
         glViewport(0, 0, windowWidth, windowHeight);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-        ShaderProgram.CreateShader("../../JungleEngineCore/src/shaders/VertexShader.vert",
-                                   "../../JungleEngineCore/src/shaders/FragmentShader.frag");
+    }
 
+    void EngineCore::setShader(Shader newShader){
+        shader.ID = newShader.ID;
     }
 
     void EngineCore::processInput() {
@@ -119,17 +120,22 @@ namespace JEE {
         glClearColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        ShaderProgram.use();
+        shader.use();
 
         glm::mat4 view = camera.GetViewMatrix();
-        ShaderProgram.setMat4("view", view);
+        shader.setMat4("view", view);
 
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(Camera::zoom), (float) windowWidth / (float) windowHeight, 0.1f, 100.0f);
-        ShaderProgram.setMat4("projection", projection);
+        shader.setMat4("projection", projection);
 
-        ShaderProgram.setInt("texture1", 0);
-        ShaderProgram.setInt("texture2", 1);
+        shader.setInt("texture1", 0);
+        shader.setInt("texture2", 1);
+
+        shader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        shader.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
+
+        shader.setVec3("LightPos", 10.0f, 20.0f, -2.0f);
     }
 
     void EngineCore::AfterRender() {
@@ -214,7 +220,7 @@ namespace JEE {
 
         if(mode == 'r')
             model *= glm::rotate(model, (float) glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-        ShaderProgram.setMat4("model", model);
+        shader.setMat4("model", model);
 
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
@@ -252,11 +258,13 @@ namespace JEE {
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f,0.0f,0.0f));
-        ShaderProgram.setMat4("model", model);
+        shader.setMat4("model", model);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
     }
+
+//    void EngineCore::renderObject()
 
     GLuint EngineCore::generateTex(const char *fileName) {
         GLuint texture;
@@ -297,7 +305,7 @@ namespace JEE {
     }
 
     void EngineCore::Stop() {
-        glDeleteProgram(ShaderProgram.ID);
+        glDeleteProgram(shader.ID);
 
         glfwTerminate();
         returnCode = 0;

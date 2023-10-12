@@ -14,6 +14,14 @@ int main(){
     GLuint texture2 = engine.generateTex("texture2.png");
     GLuint texture3 = engine.generateTex("texture3.png");
 
+    JEE::Shader Default("../../JungleEngineCore/src/shaders/Default.vert",
+                        "../../JungleEngineCore/src/shaders/Default.frag");
+
+    JEE::Shader Lighting("../../JungleEngineCore/src/shaders/Lighting.vert",
+                         "../../JungleEngineCore/src/shaders/Lighting.frag");
+
+    engine.setShader(Lighting);
+
     unsigned int cubeVAO = 0, cubeVBO = 0,
             planeVAO = 0, planeVBO = 0;
 

@@ -5,7 +5,11 @@
 #include "Shader.hpp"
 
 namespace JEE {
-    void Shader::CreateShader(const char *vertexPath, const char *fragmentPath) {
+    Shader::Shader(unsigned int id){
+        ID = id;
+    }
+
+    Shader::Shader(const char *vertexPath, const char *fragmentPath) {
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
         std::string fragmentCode;

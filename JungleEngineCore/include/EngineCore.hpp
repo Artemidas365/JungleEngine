@@ -35,7 +35,7 @@ namespace JEE {
         bool firstMouse = true;
 
         GLFWwindow *window;
-        Shader ShaderProgram;
+        Shader shader = Shader(0);
         Camera camera;
 
     public:
@@ -73,6 +73,8 @@ namespace JEE {
         std::string concatenate(std::string str1, const std::string& str2);
 
         void setBGColor(float R, float G, float B, float A);
+
+        void setShader(Shader newShader);
     };
 }
 
