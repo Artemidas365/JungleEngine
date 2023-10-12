@@ -4,13 +4,14 @@
 
 #include "EngineCore.hpp"
 
+
 int main(){
     JEE::EngineCore engine(800, 600, "test");
 
     engine.Init();
 
-    GLuint texture1 = engine.generateTex("../../JungleEngineCore/src/textures/texture1.jpg");
-    GLuint texture2 = engine.generateTex("../../JungleEngineCore/src/textures/texture2.png");
+    GLuint texture1 = engine.generateTex("texture1.jpg");
+    GLuint texture2 = engine.generateTex("texture2.png");
     engine.drawRect();
     engine.drawRect();
 

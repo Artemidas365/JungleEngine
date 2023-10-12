@@ -3,10 +3,13 @@
 //
 
 #include "EngineCore.hpp"
+
+#include <utility>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 namespace JEE {
+
     bool EngineCore::resized = true;
 
     EngineCore::EngineCore(int width, int height, const char *_title) :
@@ -201,7 +204,7 @@ namespace JEE {
 
     }
 
-    GLuint EngineCore::generateTex(const char *texPath) {
+    GLuint EngineCore::generateTex(const char *fileName) {
         GLuint texture;
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -214,7 +217,7 @@ namespace JEE {
         // load and generate the texture
         int width, height, nrChannels;
         stbi_set_flip_vertically_on_load(true);
-        unsigned char *data = stbi_load(texPath, &width, &height, &nrChannels, 0);
+        unsigned char *data = stbi_load(concatenate(textureDir, fileName).c_str() , &width, &height, &nrChannels, 0);
         if (data) {
             if(nrChannels == 3){
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -264,7 +267,17 @@ namespace JEE {
         Camera::ProcessMouseScroll(static_cast<float>(yoffset));
     }
 
+    std::string EngineCore::concatenate(std::string str1, const std::string& str2){
+        str1.append(str2);
+
+        return str1;
+    }
+
     int EngineCore::getReturnCode() const {
         return returnCode;
+    }
+
+    void EngineCore::setTexDir(std::string newDir) {
+        textureDir = std::move(newDir);
     }
 }

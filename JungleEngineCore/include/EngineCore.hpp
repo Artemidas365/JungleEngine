@@ -11,60 +11,66 @@
 #include "../../external/glm/glm/gtc/matrix_transform.hpp"
 #include "../../external/glm/glm/gtc/type_ptr.hpp"
 #include <iostream>
+#include <cstring>
 #include "Shader.hpp"
 #include "Camera.hpp"
 
 namespace JEE {
 
-        class EngineCore {
-            private:
+    class EngineCore {
+    private:
 
-                const char *title;
-                int windowWidth;
-                int windowHeight;
-                int returnCode;
-                static bool resized;
+        const char *title;
+        int windowWidth;
+        int windowHeight;
+        int returnCode;
+        static bool resized;
+        std::string textureDir = "../../JungleEngineCore/src/textures/";
 
-                float deltaTime = 0.0f;	// time between current frame and last frame
-                float lastFrame = 0.0f;
-                float lastX = 0.0f;
-                float lastY = 0.0f;
-                bool firstMouse = true;
+        float deltaTime = 0.0f;	// time between current frame and last frame
+        float lastFrame = 0.0f;
+        float lastX = 0.0f;
+        float lastY = 0.0f;
+        bool firstMouse = true;
 
-                GLFWwindow *window;
-                Shader ShaderProgram;
-                Camera camera;
+        GLFWwindow *window;
+        Shader ShaderProgram;
+        Camera camera;
 
-            public:
+    public:
 
-                EngineCore(int width, int height, const char *_title);
+        EngineCore(int width, int height, const char *_title);
 
-                void Init();
+        void Init();
 
-                void PreRender();
+        void PreRender();
 
-                void AfterRender();
+        void AfterRender();
 
-                bool Close();
+        bool Close();
 
-                int getReturnCode() const;
+        int getReturnCode() const;
 
-                void Stop();
+        void Stop();
 
-                void processInput();
+        void processInput();
 
-                void renderRect(GLuint tex1 = 0, GLuint tex2 = 0, float x = 0.0f, float y = 0.0f, float z = 0.0f);
+        void renderRect(GLuint tex1 = 0, GLuint tex2 = 0, float x = 0.0f, float y = 0.0f, float z = 0.0f);
 
-                void drawRect();
+        void drawRect();
 
-                GLuint generateTex(const char *texPath);
+        GLuint generateTex(const char *texPath);
 
-                static void resizeCallback(GLFWwindow *Window, int width, int height);
+        static void resizeCallback(GLFWwindow *Window, int width, int height);
 
-                static void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+        static void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
-                void checkResize();
-            };
-    }
+        void checkResize();
+
+        void setTexDir(std::string newDir);
+
+        std::string concatenate(std::string str1, const std::string& str2);
+    };
+}
 
 #endif //JUNGLEENGINE_ENGINECORE_HPP
