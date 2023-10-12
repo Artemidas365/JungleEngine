@@ -12,14 +12,19 @@ int main(){
 
     GLuint texture1 = engine.generateTex("texture1.jpg");
     GLuint texture2 = engine.generateTex("texture2.png");
-    engine.drawRect();
-    engine.drawRect();
+    GLuint texture3 = engine.generateTex("texture3.png");
+
+    unsigned int cubeVAO = 0, cubeVBO = 0,
+            planeVAO = 0, planeVBO = 0;
 
     while(!engine.Close())
     {
         engine.PreRender();
-        engine.renderRect(texture1, 0, -1.0f);
-        engine.renderRect(texture2, 0, 1.0f);
+
+        engine.renderPlane(planeVAO, planeVBO, texture3);
+        engine.renderCube(cubeVAO, cubeVBO, texture1, 0, -1.0f, 0.5f, 0.0f, 'r');
+        engine.renderCube(cubeVAO, cubeVBO, texture2, 0, 1.0f, 0.50001f);
+
         engine.AfterRender();
     }
 

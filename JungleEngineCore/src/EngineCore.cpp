@@ -17,7 +17,7 @@ namespace JEE {
         returnCode = 0;
         glfwInit();
         window = glfwCreateWindow(windowWidth, windowHeight, title, NULL, NULL);
-        camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+        camera = Camera(glm::vec3(0.0f, 1.0f, 5.0f));
     }
 
     void EngineCore::Init() {
@@ -44,6 +44,7 @@ namespace JEE {
 
         glViewport(0, 0, windowWidth, windowHeight);
         glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
         ShaderProgram.CreateShader("../../JungleEngineCore/src/shaders/VertexShader.vert",
                                    "../../JungleEngineCore/src/shaders/FragmentShader.frag");
 
@@ -115,8 +116,9 @@ namespace JEE {
         processInput();
         checkResize();
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         ShaderProgram.use();
 
         glm::mat4 view = camera.GetViewMatrix();
@@ -125,6 +127,9 @@ namespace JEE {
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(Camera::zoom), (float) windowWidth / (float) windowHeight, 0.1f, 100.0f);
         ShaderProgram.setMat4("projection", projection);
+
+        ShaderProgram.setInt("texture1", 0);
+        ShaderProgram.setInt("texture2", 1);
     }
 
     void EngineCore::AfterRender() {
@@ -132,76 +137,125 @@ namespace JEE {
         glUseProgram(0);
     }
 
-    void EngineCore::drawRect() {
-        float vertices[] = {
-                // positions                        // texture coords
-                0.5f, 0.5f, 0.5f, 1.0f, 1.0f, // top right
-                0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // bottom right
-                -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom left
-                -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,  // top left
-                0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-                0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-                -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-                -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-        };
-        unsigned int indices[] = {
-                1, 0, 3, // first triangle
-                1, 2, 3,  // second triangle
-                3, 2, 6,
-                3, 7, 6,
-                4, 5, 6,
-                4, 7, 6,
-                0, 1, 5,
-                0, 4, 5,
-                1, 5, 6,
-                1, 2, 6,
-                0, 4, 7,
-                0, 3, 7
-        };
-        unsigned int VBO, VAO, EBO;
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        glGenBuffers(1, &EBO);
+    void EngineCore::renderCube(GLuint cubeVAO, GLuint cubeVBO, GLuint tex1, GLuint tex2, float x, float y, float z, char mode) {
 
-        glBindVertexArray(VAO);
+        if(cubeVAO == 0){
+            float vertices[] = {
+                    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+                    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+                    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+                    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+                    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+                    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+                    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+                    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+                    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+                    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+                    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+                    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+                    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+                    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+                    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+                    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+                    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+                    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-        // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
-        glEnableVertexAttribArray(0);
-        // texture coord attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
+                    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+                    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+                    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+                    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+                    0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+                    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-        // bind Texture
-        ShaderProgram.use();
-        ShaderProgram.setInt("texture1", 0);
-        ShaderProgram.setInt("texture2", 1);
+                    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+                    0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+                    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+                    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+                    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+                    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
+                    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+                    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+                    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+                    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+                    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+                    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+            };
+            glGenVertexArrays(1, &cubeVAO);
+            glGenBuffers(1, &cubeVBO);
 
-    }
+            glBindVertexArray(cubeVAO);
 
-    void EngineCore::renderRect(GLuint tex1, GLuint tex2, float x, float y, float z) {
+            // fill buffer
+            glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+            // link vertex attributes
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+            // texture coord attribute
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(x, y, z)) *
-                glm::rotate(model, (float) glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-        ShaderProgram.setMat4("model", model);
-
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindVertexArray(0);
+        }
         // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, tex1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, tex2);
 
-        // render container
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(cubeVAO);
 
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(x, y, z));
+
+        if(mode == 'r')
+            model *= glm::rotate(model, (float) glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+        ShaderProgram.setMat4("model", model);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+    }
+
+    void EngineCore::renderPlane(GLuint planeVAO, GLuint planeVBO, GLuint tex1){
+
+        if(planeVAO == 0){
+            float quadVertices[] = {
+                    // positions                        // texture Coords
+                    -100.0f, 0.0f, -100.0f,  0.0f, 0.0f,
+                    100.0f, 0.0f, -100.0f,  1.0f, 0.0f,
+                    100.0f, 0.0f, 100.0f,  1.0f, 1.0f,
+                    -100.0f, 0.0f, -100.0f,  1.0f, 1.0f,
+                    -100.0f, 0.0f, 100.0f,  0.0f, 1.0f,
+                    100.0f, 0.0f, 100.0f,  0.0f, 0.0f,
+            };
+            // setup plane VAO
+            glGenVertexArrays(1, &planeVAO);
+            glGenBuffers(1, &planeVBO);
+
+            glBindVertexArray(planeVAO);
+
+            glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+        }
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, tex1);
+
+        glBindVertexArray(planeVAO);
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f,0.0f,0.0f));
+        ShaderProgram.setMat4("model", model);
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
     }
 
     GLuint EngineCore::generateTex(const char *fileName) {
@@ -261,7 +315,6 @@ namespace JEE {
         }
     }
 
-    // glfw: whenever the mouse scroll wheel scrolls, this callback is called
     void EngineCore::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     {
         Camera::ProcessMouseScroll(static_cast<float>(yoffset));
@@ -279,5 +332,9 @@ namespace JEE {
 
     void EngineCore::setTexDir(std::string newDir) {
         textureDir = std::move(newDir);
+    }
+
+    void EngineCore::setBGColor(float R, float G, float B, float A){
+        bgColor = glm::vec4(R, G, B, A);
     }
 }

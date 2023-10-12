@@ -66,7 +66,7 @@ namespace JEE {
         Xoffset *= mouseSensitivity;
         Yoffset *= mouseSensitivity;
 
-        yaw   += Xoffset;
+        yaw   = glm::mod( yaw + Xoffset, 360.0f );
         pitch += Yoffset;
 
         // make sure that when pitch is out of bounds, screen doesn't get flipped

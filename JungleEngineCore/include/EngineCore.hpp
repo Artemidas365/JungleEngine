@@ -26,6 +26,7 @@ namespace JEE {
         int returnCode;
         static bool resized;
         std::string textureDir = "../../JungleEngineCore/src/textures/";
+        glm::vec4 bgColor = glm::vec4(0.5f, 0.5f, 0.9f, 1.0f);
 
         float deltaTime = 0.0f;	// time between current frame and last frame
         float lastFrame = 0.0f;
@@ -55,9 +56,9 @@ namespace JEE {
 
         void processInput();
 
-        void renderRect(GLuint tex1 = 0, GLuint tex2 = 0, float x = 0.0f, float y = 0.0f, float z = 0.0f);
+        void renderCube(GLuint cubeVAO, GLuint cubeVBO, GLuint tex1 = 0, GLuint tex2 = 0, float x = 0.0f, float y = 0.0f, float z = 0.0f, char mode = 's');
 
-        void drawRect();
+        void renderPlane(GLuint planeVAO, GLuint planeVBO, GLuint tex1);
 
         GLuint generateTex(const char *texPath);
 
@@ -70,6 +71,8 @@ namespace JEE {
         void setTexDir(std::string newDir);
 
         std::string concatenate(std::string str1, const std::string& str2);
+
+        void setBGColor(float R, float G, float B, float A);
     };
 }
 
