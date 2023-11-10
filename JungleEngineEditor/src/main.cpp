@@ -20,10 +20,15 @@ int main(){
     JEE::Shader Lighting("../../JungleEngineCore/src/shaders/Lighting.vert",
                          "../../JungleEngineCore/src/shaders/Lighting.frag");
 
+    JEE::Shader RT("../../JungleEngineCore/src/shaders/RT.vert",
+                   "../../JungleEngineCore/src/shaders/RT.frag");
+
     engine.setShader(Lighting);
+    //engine.setBGColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     unsigned int cubeVAO = 0, cubeVBO = 0,
-            planeVAO = 0, planeVBO = 0;
+            planeVAO = 0, planeVBO = 0,
+            lightVAO = 0, lightVBO = 0;
 
     while(!engine.Close())
     {
@@ -32,6 +37,7 @@ int main(){
         engine.renderPlane(planeVAO, planeVBO, texture3);
         engine.renderCube(cubeVAO, cubeVBO, texture1, 0, -1.0f, 0.5f, 0.0f, 'r');
         engine.renderCube(cubeVAO, cubeVBO, texture2, 0, 1.0f, 0.50001f);
+        engine.LightSrc(lightVAO, lightVBO, glm::vec3(0.0f, 4.0f, 0.0f));
 
         engine.AfterRender();
     }

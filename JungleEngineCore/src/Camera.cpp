@@ -43,6 +43,10 @@ namespace JEE {
         updateCameraVectors();
     }
 
+    glm::vec3 Camera::getPos(){
+        return camPos;
+    }
+
     glm::mat4 Camera::GetViewMatrix()
     {
         return glm::lookAt(camPos, camPos + camFront, camUp);

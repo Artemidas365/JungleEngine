@@ -132,10 +132,10 @@ namespace JEE {
         shader.setInt("texture1", 0);
         shader.setInt("texture2", 1);
 
-        shader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        shader.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
+        shader.setVec3("lightColor",  1.0f, 1.0f, 0.8f);
+        shader.setVec3("BGCol", bgColor.x, bgColor.y, bgColor.z);
 
-        shader.setVec3("LightPos", 10.0f, 20.0f, -2.0f);
+        shader.setVec3("viewPos", camera.getPos());
     }
 
     void EngineCore::AfterRender() {
@@ -143,51 +143,51 @@ namespace JEE {
         glUseProgram(0);
     }
 
-    void EngineCore::renderCube(GLuint cubeVAO, GLuint cubeVBO, GLuint tex1, GLuint tex2, float x, float y, float z, char mode) {
+    void EngineCore::renderCube(GLuint &cubeVAO, GLuint &cubeVBO, GLuint tex1, GLuint tex2, float x, float y, float z, char mode) {
 
         if(cubeVAO == 0){
             float vertices[] = {
-                    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-                    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-                    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-                    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-                    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-                    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+                    -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
+                    0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 0.0f,
+                    0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
+                    0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
+                    -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 1.0f,
+                    -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
 
-                    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-                    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-                    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-                    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-                    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-                    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+                    -0.5f, -0.5f,  0.5f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+                    0.5f, -0.5f,  0.5f, 0.0f,  0.0f,  1.0f, 1.0f, 0.0f,
+                    0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f, 1.0f, 1.0f,
+                    0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f, 1.0f, 1.0f,
+                    -0.5f,  0.5f,  0.5f, 0.0f,  0.0f,  1.0f, 0.0f, 1.0f,
+                    -0.5f, -0.5f,  0.5f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
 
-                    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-                    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-                    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-                    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-                    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-                    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+                    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+                    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f,
+                    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+                    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+                    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
+                    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
 
-                    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-                    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-                    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-                    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-                    0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-                    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+                    0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+                    0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f,
+                    0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+                    0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+                    0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f,
+                    0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
 
-                    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-                    0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-                    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-                    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-                    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-                    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+                    -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 1.0f,
+                    0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 1.0f,
+                    0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f,
+                    0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f,
+                    -0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f,
+                    -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 1.0f,
 
-                    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-                    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-                    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-                    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-                    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-                    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+                    -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f,
+                    0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f,
+                    0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f,
+                    0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f,
+                    -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f,
+                    -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f
             };
             glGenVertexArrays(1, &cubeVAO);
             glGenBuffers(1, &cubeVBO);
@@ -198,11 +198,18 @@ namespace JEE {
             glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
             // link vertex attributes
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0 * sizeof(float)));
             glEnableVertexAttribArray(0);
-            // texture coord attribute
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(8 * sizeof(float)));
             glEnableVertexAttribArray(1);
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(16 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+            // normal attribute
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(3);
+            // texture coord attribute
+            glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+            glEnableVertexAttribArray(4);
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);
@@ -226,17 +233,17 @@ namespace JEE {
         glBindVertexArray(0);
     }
 
-    void EngineCore::renderPlane(GLuint planeVAO, GLuint planeVBO, GLuint tex1){
+    void EngineCore::renderPlane(GLuint &planeVAO, GLuint &planeVBO, GLuint tex1){
 
         if(planeVAO == 0){
             float quadVertices[] = {
                     // positions                        // texture Coords
-                    -100.0f, 0.0f, -100.0f,  0.0f, 0.0f,
-                    100.0f, 0.0f, -100.0f,  1.0f, 0.0f,
-                    100.0f, 0.0f, 100.0f,  1.0f, 1.0f,
-                    -100.0f, 0.0f, -100.0f,  1.0f, 1.0f,
-                    -100.0f, 0.0f, 100.0f,  0.0f, 1.0f,
-                    100.0f, 0.0f, 100.0f,  0.0f, 0.0f,
+                    -100.0f, 0.0f, -100.0f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f,
+                    100.0f, 0.0f, -100.0f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f,
+                    100.0f, 0.0f, 100.0f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f,
+                    -100.0f, 0.0f, -100.0f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f,
+                    -100.0f, 0.0f, 100.0f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f,
+                    100.0f, 0.0f, 100.0f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f,
             };
             // setup plane VAO
             glGenVertexArrays(1, &planeVAO);
@@ -246,10 +253,19 @@ namespace JEE {
 
             glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
             glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            // link vertex attributes
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0 * sizeof(float)));
             glEnableVertexAttribArray(0);
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(8 * sizeof(float)));
             glEnableVertexAttribArray(1);
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(16 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+            // normal attribute
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(3);
+            // texture coord attribute
+            glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+            glEnableVertexAttribArray(4);
         }
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, tex1);
@@ -261,6 +277,48 @@ namespace JEE {
         shader.setMat4("model", model);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
+    }
+
+    void EngineCore::LightSrc(unsigned int &lightVAO, unsigned int &lightVBO, glm::vec3 pos){
+        if (lightVAO == 0){
+            float vertices[] = {
+                    -1.0f, 0.0f, -1.0f, 0.0f,  -1.0f,  0.0f, 0.0f, 0.0f,
+                    1.0f, 0.0f, -1.0f, 0.0f,  -1.0f,  0.0f, 1.0f, 0.0f,
+                    1.0f, 0.0f, 1.0f, 0.0f,  -1.0f,  0.0f, 1.0f, 1.0f,
+                    -1.0f, 0.0f, 1.0f, 0.0f,  -1.0f,  0.0f, 0.0f, 1.0f,
+            };
+            glGenVertexArrays(1, &lightVAO);
+            glGenBuffers(1, &lightVBO);
+
+            glBindVertexArray(lightVAO);
+
+            glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+
+            // link vertex attributes
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0 * sizeof(float)));
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(8 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(16 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+            // normal attribute
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(3);
+            // texture coord attribute
+            glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+            glEnableVertexAttribArray(4);
+        }
+        glBindVertexArray(lightVAO);
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, pos);
+        shader.setMat4("model", model);
+
+        shader.setVec3("LightPos", pos);
+
+        glDrawArrays(GL_QUADS, 0, 4);
         glBindVertexArray(0);
     }
 

@@ -56,9 +56,9 @@ namespace JEE {
 
         void processInput();
 
-        void renderCube(GLuint cubeVAO, GLuint cubeVBO, GLuint tex1 = 0, GLuint tex2 = 0, float x = 0.0f, float y = 0.0f, float z = 0.0f, char mode = 's');
+        void renderCube(GLuint &cubeVAO, GLuint &cubeVBO, GLuint tex1 = 0, GLuint tex2 = 0, float x = 0.0f, float y = 0.0f, float z = 0.0f, char mode = 's');
 
-        void renderPlane(GLuint planeVAO, GLuint planeVBO, GLuint tex1);
+        void renderPlane(GLuint &planeVAO, GLuint &planeVBO, GLuint tex1);
 
         GLuint generateTex(const char *texPath);
 
@@ -75,6 +75,8 @@ namespace JEE {
         void setBGColor(float R, float G, float B, float A);
 
         void setShader(Shader newShader);
+
+        void LightSrc(unsigned int &lightVAO, unsigned int &lightVBO, glm::vec3 pos);
     };
 }
 

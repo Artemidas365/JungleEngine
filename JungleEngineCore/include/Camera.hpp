@@ -63,7 +63,9 @@ namespace JEE {
                 void ProcessMouseMovement(float Xoffset, float Yoffset, GLboolean constrainPitch = GL_TRUE);
 
                 static void ProcessMouseScroll(float yoffset);
-            };
+
+            glm::vec3 getPos();
+        };
     }
 
 #endif //JUNGLEENGINE_CAMERA_HPP
